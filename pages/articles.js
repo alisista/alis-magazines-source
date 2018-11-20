@@ -43,8 +43,8 @@ class Magazine extends ComponentP {
   constructor(props) {
     super(props)
     console.log(props)
-    let page = (this.params.page || 1) * 1
-    let magazine_id = this.params.id || "top"
+    let page = (props.page || 1) * 1
+    let magazine_id = props.id || "top"
     if (
       props.pageContext != undefined &&
       props.pageContext.file_id != undefined
@@ -68,7 +68,11 @@ class Magazine extends ComponentP {
     this.alerts = new alerts(this, { magazine: true })
   }
   static async getInitialProps(props) {
-    let magazine_id = props.query.id.toLowerCase()
+    let parsed = url.parse(props.asPath)
+    let id = parsed.pathname.split("/")[1].toLowerCase()
+    let query = querystring.parse(parsed.query) || { page: 1 }
+    query.id = id
+    let magazine_id = query.id.toLowerCase()
     let db = firebase.firestore()
     let ss = await db
       .collection("magazines_ids")
@@ -79,7 +83,6 @@ class Magazine extends ComponentP {
       .collection("magazines")
       .doc(ids.file_id)
       .get()
-
     let magazine = {}
     if (ss2.exists) {
       magazine = ss2.data()
@@ -90,6 +93,8 @@ class Magazine extends ComponentP {
       magazine.file_id = "admin"
     }
     return {
+      page: query.page || 1,
+      id: query.id,
       magazine_meta: magazine
     }
   }
@@ -879,6 +884,12 @@ class Magazine extends ComponentP {
   render_dashboard_articles() {
     let pages_html
     let pages = []
+    let id = this.state.magazine_id
+    console.log("page")
+    console.log(this.state.magazine)
+    if (this.state.magazine != undefined) {
+      id = this.state.magazine.url_id
+    }
     for (let p = 1; p <= Math.ceil(this.state.len / 6); p++) {
       let active = ""
       if (this.state.page === p) {
@@ -892,10 +903,7 @@ class Magazine extends ComponentP {
       } else {
         pages.push(
           <li className={`page-item`}>
-            <a
-              className="page-link"
-              href={`/${this.state.magazine_id}/?page=${p}`}
-            >
+            <a className="page-link" href={`/${id}/?page=${p}`}>
               {p}
             </a>
           </li>

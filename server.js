@@ -11,8 +11,7 @@ app
     const server = express()
     server.get("/:id", (req, res) => {
       const actualPage = "/articles"
-      const queryParams = { id: req.params.id, page: req.query.page || 1 }
-      app.render(req, res, actualPage, queryParams)
+      app.render(req, res, actualPage)
     })
     server.get("*", (req, res) => {
       return handle(req, res)
