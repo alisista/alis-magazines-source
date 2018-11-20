@@ -70,6 +70,11 @@ export default class MyDocument extends Document {
           />
           <link href="/static/tabler/css/tabler.min.css" rel="stylesheet" />
           <link href="/static/css/common.css" rel="stylesheet" />
+
+          <script src="https://www.gstatic.com/firebasejs/5.5.8/firebase-app.js" />
+
+          <script src="https://www.gstatic.com/firebasejs/5.5.8/firebase-auth.js" />
+          <script src="https://www.gstatic.com/firebasejs/5.5.8/firebase-firestore.js" />
         </Head>
         <body>
           <Main />
