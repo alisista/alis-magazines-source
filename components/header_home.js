@@ -26,12 +26,19 @@ class Header_Home extends Component {
         let paid = AHT.paid + (AHT.tip || 0)
         hold = Math.round((earned - paid) * divider) / divider
         let payment = this.props.payment || []
-        if (payment[0] != undefined && payment[0].status == "requested") {
-          hold -= payment[0].amount
+        for (let v of payment) {
+          if (v != undefined && v.status == "requested") {
+            if (
+              v.asset == undefined ||
+              v.asset.assetId === undefined ||
+              v.asset.assetId === "aht"
+            ) {
+              hold -= v.amount
+            }
+          }
         }
       }
-
-      const divider = 100000000
+      const divider = 10000000000
       hold = Math.round(hold * divider) / divider
       aht = Math.round(aht * divider) / divider
       if (this.props.user != undefined && this.props.user.linkTo == undefined) {

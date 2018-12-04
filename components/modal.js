@@ -1,10 +1,10 @@
-import React, { Component } from 'react'
+import React, { Component } from "react"
 
 class Modal extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      modal: {},
+      modal: {}
     }
   }
   render() {
@@ -15,16 +15,16 @@ class Modal extends Component {
         <button
           id="modal_exec_btn"
           type="button"
-          className={`btn btn-${this.props.modal.exec_color || 'danger'}`}
+          className={`btn btn-${this.props.modal.exec_color || "danger"}`}
           onClick={() => {
-            if (!window.$('#modal_exec_btn').hasClass('btn-gray') === true) {
-              window.$('#pageModal').modal('hide')
+            if (!window.$("#modal_exec_btn").hasClass("btn-gray") === true) {
+              window.$("#pageModal").modal("hide")
 
               this.props.modal.exec()
             }
           }}
         >
-          {this.props.modal.exec_text || '実行'}
+          {this.props.modal.exec_text || "実行"}
         </button>
       )
     }
@@ -50,16 +50,17 @@ class Modal extends Component {
                 aria-label="Close"
               />
             </div>
-            <div className="modal-body" style={{ wordBreak: 'break-all' }}>
+            <div className="modal-body" style={{ wordBreak: "break-all" }}>
               {modal.body}
             </div>
             <div className="modal-footer">
+              {this.props.modal.extra_footer}
               <button
                 type="button"
                 className="btn btn-secondary"
                 data-dismiss="modal"
               >
-                {modal.cancel_text || '取り消し'}
+                {modal.cancel_text || "取り消し"}
               </button>
               {btn_exec}
             </div>
