@@ -47,7 +47,6 @@ moment.locale("ja")
 class Magazine extends ComponentP {
   constructor(props) {
     super(props)
-    console.log(props)
     let page = (props.page || 1) * 1
     let magazine_id = props.id || "top"
     if (
@@ -75,7 +74,6 @@ class Magazine extends ComponentP {
     this.tip = new Tip(this)
   }
   static async getInitialProps(props) {
-    console.log(props)
     let parsed = url.parse(props.asPath)
     let id = parsed.pathname.split("/")[1].toLowerCase()
     let query = querystring.parse(parsed.query) || { page: 1 }
@@ -87,14 +85,11 @@ class Magazine extends ComponentP {
       magazine.description = "ALISハッカー部の公式マガジンです。"
       magazine.file_id = "admin"
     } else {
-      console.log("lets go try this shit......................")
       try {
         let db_url = `https://firestore.googleapis.com/v1beta1/projects/testnet-e8843/databases/(default)/documents/magazines_ids/${magazine_id}`
-        console.log(db_url)
         let json = await fetch(db_url).then(function(response) {
           return response.json()
         })
-        console.log(json)
         let file_id
         if (json.fields.file_id != undefined) {
           file_id = json.fields.file_id.stringValue
@@ -106,7 +101,6 @@ class Magazine extends ComponentP {
           ) {
             return response.json()
           })
-          console.log(magazine_json)
           if (magazine_json.fields.title != undefined) {
             for (let k of ["title", "cover", "description", "file_id"]) {
               if (magazine_json.fields[k] != undefined) {
@@ -116,7 +110,6 @@ class Magazine extends ComponentP {
           }
         }
       } catch (e) {
-        console.log("why error?")
         console.log(e)
       }
     }
@@ -324,7 +317,6 @@ class Magazine extends ComponentP {
     }
   }
   async loadArticles() {
-    console.log(this.state)
     await this.auth.getAllArticles(this.state.magazine.file_id)
     await this.set({ magazineArticles: [], articles_page: null })
     this.auth.listArticles(this.state.search)
@@ -796,8 +788,6 @@ class Magazine extends ComponentP {
     let pages_html
     let pages = []
     let id = this.state.magazine_id
-    console.log("page")
-    console.log(this.state.magazine)
     if (this.state.magazine != undefined) {
       id = this.state.magazine.url_id
     }
