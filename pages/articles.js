@@ -22,8 +22,12 @@ import Issue_Magazine from "../components/issue_magazine"
 import Alert from "../components/alert"
 import auth from "../lib/auth"
 import alerts from "../lib/alerts"
-import firebase from "firebase"
-require("firebase/firestore")
+import fetch from "isomorphic-fetch"
+let firebase
+try {
+  firebase = require("firebase")
+  require("firebase/firestore")
+} catch (e) {}
 const config = {
   apiKey: process.env.FIREBASE_API_KEY,
   authDomain: `${process.env.FIREBASE_PROJECT_ID}.firebaseapp.com`,
@@ -71,29 +75,50 @@ class Magazine extends ComponentP {
     this.tip = new Tip(this)
   }
   static async getInitialProps(props) {
+    console.log(props)
     let parsed = url.parse(props.asPath)
     let id = parsed.pathname.split("/")[1].toLowerCase()
     let query = querystring.parse(parsed.query) || { page: 1 }
     query.id = id
     let magazine_id = query.id.toLowerCase()
-    let db = firebase.firestore()
-    let ss = await db
-      .collection("magazines_ids")
-      .doc(magazine_id)
-      .get()
-    let ids = ss.data() || { file_id: magazine_id }
-    let ss2 = await db
-      .collection("magazines")
-      .doc(ids.file_id)
-      .get()
     let magazine = {}
-    if (ss2.exists) {
-      magazine = ss2.data()
-    }
     if (magazine_id == "admin") {
       magazine.title = `HACKER'S CLUB MAGAZINE`
       magazine.description = "ALISハッカー部の公式マガジンです。"
       magazine.file_id = "admin"
+    } else {
+      console.log("lets go try this shit......................")
+      try {
+        let db_url = `https://firestore.googleapis.com/v1beta1/projects/testnet-e8843/databases/(default)/documents/magazines_ids/${magazine_id}`
+        console.log(db_url)
+        let json = await fetch(db_url).then(function(response) {
+          return response.json()
+        })
+        console.log(json)
+        let file_id
+        if (json.fields.file_id != undefined) {
+          file_id = json.fields.file_id.stringValue
+        }
+        if (file_id != undefined) {
+          let magazine_url = `https://firestore.googleapis.com/v1beta1/projects/testnet-e8843/databases/(default)/documents/magazines/${file_id}`
+          let magazine_json = await fetch(magazine_url).then(function(
+            response
+          ) {
+            return response.json()
+          })
+          console.log(magazine_json)
+          if (magazine_json.fields.title != undefined) {
+            for (let k of ["title", "cover", "description", "file_id"]) {
+              if (magazine_json.fields[k] != undefined) {
+                magazine[k] = magazine_json.fields[k].stringValue
+              }
+            }
+          }
+        }
+      } catch (e) {
+        console.log("why error?")
+        console.log(e)
+      }
     }
     return {
       page: query.page || 1,
