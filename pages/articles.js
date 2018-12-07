@@ -86,7 +86,9 @@ class Magazine extends ComponentP {
       magazine.file_id = "admin"
     } else {
       try {
-        let db_url = `https://firestore.googleapis.com/v1beta1/projects/testnet-e8843/databases/(default)/documents/magazines_ids/${magazine_id}`
+        let db_url = `https://firestore.googleapis.com/v1beta1/projects/${
+          process.env.FIREBASE_PROJECT_ID
+        }/databases/(default)/documents/magazines_ids/${magazine_id}`
         let json = await fetch(db_url).then(function(response) {
           return response.json()
         })
@@ -95,7 +97,9 @@ class Magazine extends ComponentP {
           file_id = json.fields.file_id.stringValue
         }
         if (file_id != undefined) {
-          let magazine_url = `https://firestore.googleapis.com/v1beta1/projects/testnet-e8843/databases/(default)/documents/magazines/${file_id}`
+          let magazine_url = `https://firestore.googleapis.com/v1beta1/projects/${
+            process.env.FIREBASE_PROJECT_ID
+          }/databases/(default)/documents/magazines/${file_id}`
           let magazine_json = await fetch(magazine_url).then(function(
             response
           ) {
